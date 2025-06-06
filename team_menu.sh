@@ -40,7 +40,7 @@ function mount_apt_vault() {
 
 function setup_vault() {
     local team="$1"
-	local share_ip="$2"
+    local share_ip="$2"
     local mount_share=""
     local vault_name=""
     local vault_dest="$HOME/${team}TeamVault"
