@@ -115,24 +115,51 @@ function setup_vault() {
 
 function connect_sliver() {
     local team="$1"
-
-    read -rp "Enter Sliver server IP: " sliver_ip
+    local sliver_ip=""
+    local cert_suffix=""
+    local users=()
 
     if [[ "$team" == "Purple" ]]; then
+        echo "Choose Sliver Server:"
+        echo "1) 10.200.200.100"
+        echo "2) 10.200.200.101"
+        read -rp "Enter choice (1/2): " sliver_choice
+
+        case "$sliver_choice" in
+            1) sliver_ip="10.200.200.100"; cert_suffix="0" ;;
+            2) sliver_ip="10.200.200.101"; cert_suffix="1" ;;
+            *) echo "[!] Invalid Sliver server choice"; return ;;
+        esac
+
         users=(JG NL KH AD)
-    else
+
+    elif [[ "$team" == "Red" ]]; then
+        echo "Choose Sliver Server:"
+        echo "1) 192.168.200.150"
+        echo "2) 192.168.200.153"
+        read -rp "Enter choice (1/2): " sliver_choice
+
+        case "$sliver_choice" in
+            1) sliver_ip="192.168.200.150"; cert_suffix="0" ;;
+            2) sliver_ip="192.168.200.153"; cert_suffix="1" ;;
+            *) echo "[!] Invalid Sliver server choice"; return ;;
+        esac
+
         users=(LH JK JS BW TM ER)
+
+    else
+        echo "[!] Unknown team: $team"
+        return
     fi
 
     echo "Choose Sliver user:"
     select user in "${users[@]}"; do
         if [[ -n "$user" ]]; then
-            echo "[*] Importing cert for Server $sliver_ip as user $user ..."
-            ~/sliver/sliver-client_linux import ~/sliver/certs/"$user".cfg
-            echo ""
-            echo "Connect with:"
-            echo "sliver-client_linux"
-            echo ""
+            echo "[*] Importing cert for $user.$cert_suffix on $sliver_ip ..."
+            ~/sliver/sliver-client_linux import ~/sliver/certs/"$user"."$cert_suffix".cfg
+            echo " "
+            echo "Connect with: sliver-client_linux"
+            echo " "
             echo " +++++++++++++++++++++++++++++++++++++++++++++ "
             break
         else
