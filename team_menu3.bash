@@ -141,7 +141,7 @@ function connect_sliver() {
     done
 }
 
-}
+
 
 function connect_cobalt_strike() {
     echo "Choose Cobalt Strike Teamserver:"
@@ -196,19 +196,24 @@ function main_menu() {
 	
 SLIVER_PATH="$HOME/sliver"
 
-# Permanently add to future shells
-if ! grep -Fxq "export PATH=\"$SLIVER_PATH:\$PATH\"" "$HOME/.bashrc"; then
-    echo "export PATH=\"$SLIVER_PATH:\$PATH\"" >> "$HOME/.bashrc"
-    echo "[+] Added Sliver to PATH in .bashrc"
+# Ensure ~/.local/bin exists for both root and user
+if [[ $EUID -eq 0 ]]; then
+    BIN_DIR="/root/.local/bin"
+else
+    BIN_DIR="$HOME/.local/bin"
 fi
 
-if ! grep -Fxq "export PATH=\"$SLIVER_PATH:\$PATH\"" "$HOME/.profile"; then
-    echo "export PATH=\"$SLIVER_PATH:\$PATH\"" >> "$HOME/.profile"
-    echo "[+] Added Sliver to PATH in .profile"
+mkdir -p "$BIN_DIR"
+
+# Update PATH for current session
+export PATH="$BIN_DIR:$PATH"
+
+# Symlink the Sliver client if not already present
+if [[ ! -f "$BIN_DIR/sliver-client_linux" ]]; then
+    ln -sf "$HOME/sliver/sliver-client_linux" "$BIN_DIR/sliver-client_linux"
+    echo "[+] Symlinked sliver-client_linux to $BIN_DIR"
 fi
 
-# Immediately add to current session
-export PATH="$SLIVER_PATH:$PATH"
 
 
 }
